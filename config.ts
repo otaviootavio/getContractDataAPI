@@ -6,14 +6,14 @@ import {
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { config } from "dotenv";
-import { hardhat } from "viem/chains";
 
 config();
 
 export const contractAddress: string = process.env.CONTRACT_ADDRESS || "";
 export const account = privateKeyToAccount(
   `0x${process.env.PRIVATE_KEY}` ?? `0x${"000"}`
-).address;
+);
+
 export const scrollSepolia = defineChain({
   id: 534351,
   name: "Scroll Sepolia",
@@ -24,7 +24,7 @@ export const scrollSepolia = defineChain({
   },
   rpcUrls: {
     default: {
-      http: ["https://sepolia-rpc.scroll.io"],
+      http: ["https://scroll-sepolia.public.blastapi.io"],
     },
   },
   blockExplorers: {
@@ -34,11 +34,11 @@ export const scrollSepolia = defineChain({
 
 export const walletClient = createWalletClient({
   account,
-  chain: hardhat,
-  transport: http(),
+  chain: scrollSepolia,
+  transport: http("https://scroll-sepolia.public.blastapi.io"),
 });
 
 export const publicClient = createPublicClient({
-  chain: hardhat,
-  transport: http(),
+  chain: scrollSepolia,
+  transport: http("https://scroll-sepolia.public.blastapi.io"),
 });

@@ -7,7 +7,7 @@ import {
 } from "../config";
 import { abi } from "../abi";
 
-import { hardhat } from "viem/chains";
+import { scrollSepolia } from "../config";
 
 const app = express();
 const port = 3000;
@@ -89,7 +89,7 @@ async function addCIDToContractSetMyJsonCID(
     functionName: "addMyJsonCID",
     args: [cid, `0x${cidOwnerAddress}`],
     account,
-    chain: hardhat,
+    chain: scrollSepolia,
   });
 
   if (!request) {
@@ -113,7 +113,7 @@ async function addCIDToContractSetMyPdfCID(
     functionName: "addMyPdfCID",
     args: [cid, `0x${cidOwnerAddress}`],
     account,
-    chain: hardhat,
+    chain: scrollSepolia,
   });
 
   if (!request) {
