@@ -28,7 +28,7 @@ app.get(
       const jsonResponse = await publicClient.readContract({
         address: `0x${contractAddress}`,
         abi,
-        functionName: "getJsonCID",
+        functionName: "getJsonCIDs",
         args: [`0x${cidOwnerAddress}`],
         account,
       });
@@ -36,7 +36,7 @@ app.get(
       const pdfResponse = await publicClient.readContract({
         address: `0x${contractAddress}`,
         abi,
-        functionName: "getPdfCID",
+        functionName: "getPdfCIDs",
         args: [`0x${cidOwnerAddress}`],
         account,
       });
@@ -86,7 +86,7 @@ async function addCIDToContractSetMyJsonCID(
   const { request } = await publicClient.simulateContract({
     address: `0x${contractAddress}`,
     abi,
-    functionName: "setMyJsonCID",
+    functionName: "addMyJsonCID",
     args: [cid, `0x${cidOwnerAddress}`],
     account,
     chain: hardhat,
@@ -110,7 +110,7 @@ async function addCIDToContractSetMyPdfCID(
   const { request } = await publicClient.simulateContract({
     address: `0x${contractAddress}`,
     abi,
-    functionName: "setMyPdfCID",
+    functionName: "addMyPdfCID",
     args: [cid, `0x${cidOwnerAddress}`],
     account,
     chain: hardhat,

@@ -15,7 +15,7 @@ export const abi = [
         type: "string",
       },
     ],
-    name: "JsonCIDSet",
+    name: "JsonCIDAdded",
     type: "event",
   },
   {
@@ -34,50 +34,50 @@ export const abi = [
         type: "string",
       },
     ],
-    name: "PdfCIDSet",
+    name: "JsonCIDRemoved",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "addr",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "cid",
+        type: "string",
+      },
+    ],
+    name: "PdfCIDAdded",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "addr",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "cid",
+        type: "string",
+      },
+    ],
+    name: "PdfCIDRemoved",
     type: "event",
   },
   {
     inputs: [
       {
-        internalType: "address",
-        name: "addr",
-        type: "address",
-      },
-    ],
-    name: "getJsonCID",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "addr",
-        type: "address",
-      },
-    ],
-    name: "getPdfCID",
-    outputs: [
-      {
-        internalType: "string",
-        name: "",
-        type: "string",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "string",
         name: "cid",
         type: "string",
@@ -88,7 +88,7 @@ export const abi = [
         type: "address",
       },
     ],
-    name: "setMyJsonCID",
+    name: "addMyJsonCID",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -106,9 +106,47 @@ export const abi = [
         type: "address",
       },
     ],
-    name: "setMyPdfCID",
+    name: "addMyPdfCID",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "addr",
+        type: "address",
+      },
+    ],
+    name: "getJsonCIDs",
+    outputs: [
+      {
+        internalType: "string[]",
+        name: "",
+        type: "string[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "addr",
+        type: "address",
+      },
+    ],
+    name: "getPdfCIDs",
+    outputs: [
+      {
+        internalType: "string[]",
+        name: "",
+        type: "string[]",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
 ] as const;
