@@ -15,7 +15,7 @@ export const abi = [
         type: "string",
       },
     ],
-    name: "CIDAdded",
+    name: "JsonCIDSet",
     type: "event",
   },
   {
@@ -34,25 +34,26 @@ export const abi = [
         type: "string",
       },
     ],
-    name: "CIDRemoved",
+    name: "PdfCIDSet",
     type: "event",
   },
   {
     inputs: [
       {
-        internalType: "string",
-        name: "cid",
-        type: "string",
-      },
-      {
         internalType: "address",
-        name: "_sender",
+        name: "addr",
         type: "address",
       },
     ],
-    name: "addMyCID",
-    outputs: [],
-    stateMutability: "nonpayable",
+    name: "getJsonCID",
+    outputs: [
+      {
+        internalType: "string",
+        name: "",
+        type: "string",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {
@@ -63,12 +64,12 @@ export const abi = [
         type: "address",
       },
     ],
-    name: "getCIDs",
+    name: "getPdfCID",
     outputs: [
       {
-        internalType: "string[]",
+        internalType: "string",
         name: "",
-        type: "string[]",
+        type: "string",
       },
     ],
     stateMutability: "view",
@@ -87,7 +88,25 @@ export const abi = [
         type: "address",
       },
     ],
-    name: "removeMyCID",
+    name: "setMyJsonCID",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "cid",
+        type: "string",
+      },
+      {
+        internalType: "address",
+        name: "_sender",
+        type: "address",
+      },
+    ],
+    name: "setMyPdfCID",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

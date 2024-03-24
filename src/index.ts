@@ -9,43 +9,42 @@ import { abi } from "../abi";
 
 import { hardhat } from "viem/chains";
 
-// Interface definitions are great. Keeping them is good practice.
-interface Contract {
-  owner: string;
-  cids: string[];
-}
-
-const contracts: Contract[] = [];
-
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-// Improved error messages and added try-catch for better error handling
+// Fetch JSON and PDF CIDs for a user address
 app.get(
-  "/CIDFromContractByUserAddress",
+  "/CIDsFromContractByUserAddress",
   async (req: Request, res: Response) => {
     try {
-      const cidOwnerAddress = req.query.cidOwnerAddress as string; // Explicitly declare the type
+      const cidOwnerAddress = req.query.cidOwnerAddress as string;
 
       if (!cidOwnerAddress) {
         return res.status(400).send("Address is required");
       }
 
-      const response = await publicClient.readContract({
+      const jsonResponse = await publicClient.readContract({
         address: `0x${contractAddress}`,
         abi,
-        functionName: "getCIDs",
+        functionName: "getJsonCID",
         args: [`0x${cidOwnerAddress}`],
         account,
       });
 
-      if (response) {
-        res.json({ CIDS: response });
-      } else {
-        res.status(404).send("No CIDs found for the given address");
-      }
+      const pdfResponse = await publicClient.readContract({
+        address: `0x${contractAddress}`,
+        abi,
+        functionName: "getPdfCID",
+        args: [`0x${cidOwnerAddress}`],
+        account,
+      });
+
+      res.json({
+        jsonCID: jsonResponse || "No JSON CID found",
+        pdfCID: pdfResponse || "No PDF CID found",
+      });
     } catch (error) {
       console.error("Failed to get CIDs:", error);
       res.status(500).send("Internal server error");
@@ -53,35 +52,79 @@ app.get(
   }
 );
 
-// Improved error handling and response messages
+// Add JSON or PDF CID to contract
 app.post("/AddCIDToContract", async (req: Request, res: Response) => {
   try {
-    const { cidOwnerAddress, cid } = req.body;
+    const { cidOwnerAddress, jsonCID, pdfCID } = req.body;
 
-    if (!cidOwnerAddress || !cid) {
-      return res.status(400).send("Both owner address and CID are required");
+    if (!cidOwnerAddress || (!jsonCID && !pdfCID)) {
+      return res
+        .status(400)
+        .send("Owner address and at least one CID (JSON or PDF) are required");
     }
 
-    const { request, result } = await publicClient.simulateContract({
-      address: `0x${contractAddress}`,
-      abi,
-      functionName: "addMyCID",
-      args: [cid, `0x${cidOwnerAddress}`],
-      account,
-      chain: hardhat,
-    });
-
-    if (request) {
-      await walletClient.writeContract(request);
-      res.status(201).send("CID successfully added to contract");
-    } else {
-      res.status(400).send("Failed to simulate contract operation");
+    if (jsonCID) {
+      await addCIDToContractSetMyJsonCID(jsonCID, cidOwnerAddress, res);
     }
+
+    if (pdfCID) {
+      await addCIDToContractSetMyPdfCID(pdfCID, cidOwnerAddress, res);
+    }
+
+    res.status(201).send("CID(s) successfully added to contract");
   } catch (error) {
-    console.error("Failed to add CID:", error);
+    console.error("Failed to add CID(s):", error);
     res.status(500).send("Internal server error");
   }
 });
+
+async function addCIDToContractSetMyJsonCID(
+  cid: string,
+  cidOwnerAddress: string,
+  res: Response
+) {
+  const { request } = await publicClient.simulateContract({
+    address: `0x${contractAddress}`,
+    abi,
+    functionName: "setMyJsonCID",
+    args: [cid, `0x${cidOwnerAddress}`],
+    account,
+    chain: hardhat,
+  });
+
+  if (!request) {
+    res
+      .status(400)
+      .send(`Failed to simulate contract operation for setMyJsonCID`);
+    return;
+  }
+
+  await walletClient.writeContract(request);
+}
+
+async function addCIDToContractSetMyPdfCID(
+  cid: string,
+  cidOwnerAddress: string,
+  res: Response
+) {
+  const { request } = await publicClient.simulateContract({
+    address: `0x${contractAddress}`,
+    abi,
+    functionName: "setMyPdfCID",
+    args: [cid, `0x${cidOwnerAddress}`],
+    account,
+    chain: hardhat,
+  });
+
+  if (!request) {
+    res
+      .status(400)
+      .send(`Failed to simulate contract operation for setMyPdfCID`);
+    return;
+  }
+
+  await walletClient.writeContract(request);
+}
 
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}`);

@@ -2,44 +2,38 @@
 pragma solidity ^0.8.0;
 
 contract IPFSRegistry {
-    // Mapping from address to multiple IPFS Content Identifiers (CIDs)
-    mapping(address => string[]) private _addressToCIDs;
-
-    // Event that is emitted when a CID is added for an address
-    event CIDAdded(address indexed addr, string cid);
-
-    // Event that is emitted when a CID is removed for an address
-    event CIDRemoved(address indexed addr, string cid);
-
-    // Adds a new CID for the sender's address. Allows multiple CIDs per address.
-    function addMyCID(string calldata cid, address _sender) public {
-        _addressToCIDs[_sender].push(cid);
-        emit CIDAdded(_sender, cid);
+    // A structure to hold two types of CIDs: .json and .pdf
+    struct FileCIDs {
+        string jsonCID;
+        string pdfCID;
     }
 
-    // Removes a CID for the sender's address. Assumes CIDs are unique per address.
-    function removeMyCID(string calldata cid, address _sender) public {
-        require(_addressToCIDs[_sender].length > 0, "No CIDs to remove.");
+    // Mapping from address to FileCIDs
+    mapping(address => FileCIDs) private _addressToFileCIDs;
 
-        for (uint i = 0; i < _addressToCIDs[_sender].length; i++) {
-            if (
-                keccak256(bytes(_addressToCIDs[_sender][i])) ==
-                keccak256(bytes(cid))
-            ) {
-                _addressToCIDs[_sender][i] = _addressToCIDs[_sender][
-                    _addressToCIDs[_sender].length - 1
-                ];
-                _addressToCIDs[_sender].pop();
-                emit CIDRemoved(_sender, cid);
-                return;
-            }
-        }
+    // Events that are emitted when a CID is set
+    event JsonCIDSet(address indexed addr, string cid);
+    event PdfCIDSet(address indexed addr, string cid);
 
-        require(false, "CID not found.");
+    // Sets the .json CID for the sender's address. Can replace an existing CID.
+    function setMyJsonCID(string calldata cid, address _sender) public {
+        _addressToFileCIDs[_sender].jsonCID = cid;
+        emit JsonCIDSet(_sender, cid);
     }
 
-    // Retrieves all CIDs associated with an address. Returns an empty array if none are set.
-    function getCIDs(address addr) public view returns (string[] memory) {
-        return _addressToCIDs[addr];
+    // Sets the .pdf CID for the sender's address. Can replace an existing CID.
+    function setMyPdfCID(string calldata cid, address _sender) public {
+        _addressToFileCIDs[_sender].pdfCID = cid;
+        emit PdfCIDSet(_sender, cid);
+    }
+
+    // Retrieves the .json CID associated with an address. Returns an empty string if none is set.
+    function getJsonCID(address addr) public view returns (string memory) {
+        return _addressToFileCIDs[addr].jsonCID;
+    }
+
+    // Retrieves the .pdf CID associated with an address. Returns an empty string if none is set.
+    function getPdfCID(address addr) public view returns (string memory) {
+        return _addressToFileCIDs[addr].pdfCID;
     }
 }
